@@ -1,0 +1,50 @@
+.quick-add {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #c4c4c4;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.quick-add__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.quick-add:hover:not(:disabled) {
+  color: var(--lime);
+}
+
+.quick-add__plus {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--bg);
+  border-radius: 50%;
+  background: var(--lime);
+  color: #0a0a0a;
+  transition: transform 0.2s ease;
+}
+
+.quick-add:hover:not(:disabled) .quick-add__plus {
+  transform: scale(1.12);
+}
+
+.quick-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quick-add:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}

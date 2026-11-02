@@ -28,7 +28,11 @@ export default function CollectionsPage() {
       <div className="container">
         <div className="collection-grid">
           {collectionTiles.map((tile) => (
-            <a className="collection-tile" href="#/store" key={tile.id}>
+            <a
+              className="collection-tile"
+              href={`#/store?category=${tile.id === 'tshirts' ? 'tshirts' : tile.id === 'cargo-pants' ? 'pants' : tile.id.startsWith('puffer') ? 'jackets' : tile.id}`}
+              key={tile.id}
+            >
               <img src={tile.image} alt={tile.alt} loading="lazy" />
               <span className="collection-tile__scrim" aria-hidden="true" />
               <span className="collection-tile__body">
@@ -56,7 +60,7 @@ export default function CollectionsPage() {
               <span className="movement__script">Movement</span>
             </h2>
             <p className="movement__tag">Be part of BYOK.</p>
-            <a className="movement__cta" href="#/store">
+            <a className="movement__cta" href="#/collections/essentials">
               Shop now
               <ArrowRight size={14} />
             </a>

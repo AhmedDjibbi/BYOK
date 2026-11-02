@@ -1,17 +1,28 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { products } from '../data/content'
+import { storeCatalogue } from '../data/store'
 import { ArrowRight, ChevronLeft, ChevronRight, Heart } from './Icons'
+import QuickAddButton from './QuickAddButton'
 import './Products.css'
 
-export default function Products() {
+export default function Products({ onAddToCart, wishlistIds = [], onToggleWishlist }) {
   const trackRef = useRef(null)
-  const [wishlist, setWishlist] = useState([])
+  const [catalogue, setCatalogue] = useState([])
 
-  const toggleWish = (id) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    )
-  }
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/products', { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Unable to load current product stock.')
+        const data = await response.json()
+        if (!Array.isArray(data.products)) throw new Error('The product catalogue is unavailable.')
+        setCatalogue(data.products)
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') console.error('Unable to load featured product stock.', error)
+      })
+    return () => controller.abort()
+  }, [])
 
   const scrollByCard = (direction) => {
     const track = trackRef.current
@@ -29,7 +40,7 @@ export default function Products() {
             <p className="section-label">Featured collection</p>
             <h2 className="section-title">The New Drop</h2>
           </div>
-          <a className="link-arrow" href="#new-drop">
+          <a className="link-arrow" href="#/store?sort=new">
             View all products
             <ArrowRight />
           </a>
@@ -47,7 +58,20 @@ export default function Products() {
 
           <div className="products__track" ref={trackRef}>
             {products.map((product) => {
-              const liked = wishlist.includes(product.id)
+              const fallbackProduct = storeCatalogue.find((item) =>
+                item.id.startsWith(`${product.id}-`),
+              )
+              const storeProduct =
+                catalogue.find((item) => item.name === product.name) ?? fallbackProduct
+              const defaultSize =
+                storeProduct?.sizes.find((size) => (storeProduct.stockBySize?.[size] ?? 0) > 0) ??
+                (storeProduct?.sizes.includes('M') ? 'M' : storeProduct?.sizes[0])
+              const available = Boolean(
+                catalogue.length &&
+                  storeProduct &&
+                  (storeProduct.stockBySize?.[defaultSize] ?? 0) > 0,
+              )
+              const liked = storeProduct && wishlistIds.includes(storeProduct.id)
               return (
                 <article className="product" key={product.id}>
                   <span className="product__media">
@@ -57,15 +81,32 @@ export default function Products() {
                   <button
                     type="button"
                     className={`product__wish${liked ? ' is-active' : ''}`}
-                    aria-label={liked ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+                    aria-label={
+                      liked
+                        ? `Remove ${product.name} from wishlist`
+                        : `Add ${product.name} to wishlist`
+                    }
                     aria-pressed={liked}
-                    onClick={() => toggleWish(product.id)}
+                    disabled={!storeProduct}
+                    onClick={() => storeProduct && onToggleWishlist(storeProduct.id)}
                   >
                     <Heart filled={liked} size={19} />
                   </button>
-                  <h3 className="product__name">
-                    <a href="#new-drop">{product.name}</a>
-                  </h3>
+                  <div className="product__info-row">
+                    <h3 className="product__name">
+                      <a href={storeProduct ? `#/product/${storeProduct.id}` : '#new-drop'}>
+                        {product.name}
+                      </a>
+                    </h3>
+                    <QuickAddButton
+                      productName={product.name}
+                      disabled={!available}
+                      onClick={() =>
+                        available &&
+                        onAddToCart({ ...storeProduct, size: defaultSize, image: product.image })
+                      }
+                    />
+                  </div>
                   <p className="product__price">{product.price}</p>
                   <ul className="product__colors" aria-label="Available colours">
                     {product.colors.map((color, index) => (

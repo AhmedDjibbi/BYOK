@@ -162,6 +162,28 @@ const baseProducts = [
     activeColor: 0,
     sizes: ['S', 'M', 'L', 'XL'],
   },
+  {
+    slug: 'signal-cap',
+    name: 'Signal Logo Cap',
+    price: 59,
+    category: 'accessories',
+    primary: 'black',
+    garment: { type: 'cap', body: '#151515', trim: '#4a4a4a', print: 'logo' },
+    colors: ['#d8d8d8', '#6d6d6d', '#2a2a2a'],
+    activeColor: 0,
+    sizes: ['ONE SIZE'],
+  },
+  {
+    slug: 'utility-crossbody',
+    name: 'Utility Crossbody Bag',
+    price: 89,
+    category: 'accessories',
+    primary: 'black',
+    garment: { type: 'bag', body: '#171717', trim: '#555555', print: 'brand' },
+    colors: ['#d8d8d8', '#6d6d6d', '#2a2a2a'],
+    activeColor: 0,
+    sizes: ['ONE SIZE'],
+  },
 ]
 
 const paletteIndex = new Map(palette.map((entry, index) => [entry.id, index]))

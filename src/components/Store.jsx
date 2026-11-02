@@ -1,12 +1,6 @@
-import { useMemo, useState } from 'react'
-import Garment from './Garment'
-import {
-  ChevronDown,
-  ChevronRight,
-  Heart,
-  RotateCcw,
-  SlidersHorizontal,
-} from './Icons'
+import { useEffect, useMemo, useState } from 'react'
+import ProductCard from './ProductCard'
+import { ChevronDown, ChevronRight, RotateCcw, SlidersHorizontal } from './Icons'
 import {
   categories,
   colorOptions,
@@ -14,21 +8,54 @@ import {
   priceBounds,
   sizes,
   sortOptions,
-  storeCatalogue,
 } from '../data/store'
 import './Store.css'
 
 const toggleValue = (list, value) =>
   list.includes(value) ? list.filter((item) => item !== value) : [...list, value]
 
-export default function Store() {
-  const [categoryIds, setCategoryIds] = useState([])
+export default function Store({
+  onAddToCart,
+  wishlistIds = [],
+  onToggleWishlist,
+  initialCategory = '',
+  initialSort = 'best',
+  featuredOnly = false,
+}) {
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [catalogueError, setCatalogueError] = useState(false)
+  const [reload, setReload] = useState(0)
+  const [categoryIds, setCategoryIds] = useState(initialCategory ? [initialCategory] : [])
   const [sizeIds, setSizeIds] = useState([])
   const [colorIds, setColorIds] = useState([])
   const [price, setPrice] = useState([priceBounds.min, priceBounds.max])
-  const [sort, setSort] = useState('best')
+  const [sort, setSort] = useState(initialSort)
   const [page, setPage] = useState(1)
-  const [likedIds, setLikedIds] = useState([])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    const loadProducts = async () => {
+      try {
+        const response = await fetch('/api/products', { signal: controller.signal })
+        if (!response.ok) throw new Error(`Product request failed (${response.status}).`)
+        const data = await response.json()
+        if (!Array.isArray(data.products)) throw new Error('Invalid product response.')
+        setProducts(data.products)
+        setCatalogueError(false)
+      } catch (error) {
+        if (error.name === 'AbortError') return
+        console.error('Unable to load the product catalogue.', error)
+        setCatalogueError(true)
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false)
+      }
+    }
+
+    loadProducts()
+    return () => controller.abort()
+  }, [reload])
 
   const resetPage = () => setPage(1)
 
@@ -65,13 +92,10 @@ export default function Store() {
     setPage(1)
   }
 
-  const toggleLike = (id) => {
-    setLikedIds((prev) => toggleValue(prev, id))
-  }
-
   const filtered = useMemo(() => {
-    const list = storeCatalogue.filter(
+    const list = products.filter(
       (product) =>
+        (!featuredOnly || Boolean(product.badge)) &&
         (categoryIds.length === 0 || categoryIds.includes(product.category)) &&
         (sizeIds.length === 0 || product.sizes.some((size) => sizeIds.includes(size))) &&
         (colorIds.length === 0 || colorIds.includes(product.color)) &&
@@ -83,7 +107,7 @@ export default function Store() {
     if (sort === 'price-asc') return [...list].sort((a, b) => a.price - b.price)
     if (sort === 'price-desc') return [...list].sort((a, b) => b.price - a.price)
     return list
-  }, [categoryIds, sizeIds, colorIds, price, sort])
+  }, [products, categoryIds, sizeIds, colorIds, price, sort, featuredOnly])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
   const currentPage = Math.min(page, pageCount)
@@ -233,7 +257,7 @@ export default function Store() {
             <p className="store-count">
               Showing{' '}
               <strong>
-                {startIndex + 1}&ndash;{startIndex + visible.length}
+                {filtered.length ? `${startIndex + 1}–${startIndex + visible.length}` : '0'}
               </strong>{' '}
               of <strong>{filtered.length}</strong> products
             </p>
@@ -258,45 +282,33 @@ export default function Store() {
             </label>
           </div>
 
-          {visible.length > 0 ? (
+          {isLoading ? (
+            <p className="store-status" role="status">Loading products...</p>
+          ) : catalogueError ? (
+            <div className="store-empty" role="alert">
+              <p>Products are unavailable. Check that the API is running and the catalogue is seeded.</p>
+              <button
+                type="button"
+                className="reset-btn"
+                onClick={() => {
+                  setIsLoading(true)
+                  setReload((value) => value + 1)
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          ) : visible.length > 0 ? (
             <div className="store-grid">
-              {visible.map((product) => {
-                const liked = likedIds.includes(product.id)
-                return (
-                  <article className="store-card" key={product.id}>
-                    <a className="store-card__media" href="#/store" aria-label={product.name}>
-                      <Garment {...product.garment} />
-                      {product.badge && (
-                        <span className="store-card__badge">{product.badge}</span>
-                      )}
-                    </a>
-                    <button
-                      type="button"
-                      className={`store-card__wish${liked ? ' is-active' : ''}`}
-                      aria-label={
-                        liked ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`
-                      }
-                      aria-pressed={liked}
-                      onClick={() => toggleLike(product.id)}
-                    >
-                      <Heart filled={liked} size={18} />
-                    </button>
-                    <h3 className="store-card__name">
-                      <a href="#/store">{product.name}</a>
-                    </h3>
-                    <p className="store-card__price">{product.price} TND</p>
-                    <ul className="store-card__swatches" aria-label="Available colours">
-                      {product.colors.map((color, index) => (
-                        <li
-                          key={`${product.id}-${index}`}
-                          className={`swatch${index === product.activeColor ? ' is-active' : ''}`}
-                          style={index === product.activeColor ? { backgroundColor: color } : undefined}
-                        />
-                      ))}
-                    </ul>
-                  </article>
-                )
-              })}
+              {visible.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={onAddToCart}
+                  isWishlisted={wishlistIds.includes(product.id)}
+                  onToggleWishlist={onToggleWishlist}
+                />
+              ))}
             </div>
           ) : (
             <div className="store-empty">

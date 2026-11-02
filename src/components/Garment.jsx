@@ -167,12 +167,44 @@ function TrackJacket({ uid, body, trim }) {
   )
 }
 
+function Cap({ uid, trim, print }) {
+  return (
+    <g>
+      <path
+        fill={`url(#${uid}-fabric)`}
+        d="M92 232 Q103 101 200 92 Q297 101 308 232 L92 232 Z"
+      />
+      <path fill="#000" opacity="0.22" d="M200 100 Q286 110 301 220 L200 220 Z" />
+      <path fill={trim} opacity="0.65" d="M92 226 Q200 206 308 226 L348 255 Q200 282 52 255 Z" />
+      <path fill="none" stroke="#000" strokeWidth="3" opacity="0.4" d="M200 98 L200 218 M96 230 Q200 210 304 230" />
+      {print === 'logo' && <Logo x={200} y={174} scale={0.55} color="#f4f4f4" />}
+      <ellipse cx="200" cy="292" rx="120" ry="12" fill="#000" opacity="0.3" />
+    </g>
+  )
+}
+
+function CrossbodyBag({ uid, trim, print }) {
+  return (
+    <g>
+      <path fill="none" stroke={trim} strokeWidth="13" d="M122 178 Q200 18 278 178" />
+      <path fill={`url(#${uid}-fabric)`} d="M98 170 Q200 144 302 170 L286 360 Q200 384 114 360 Z" />
+      <path fill="#000" opacity="0.22" d="M200 160 Q256 160 296 171 L282 356 L200 372 Z" />
+      <path fill="none" stroke={trim} strokeWidth="4" opacity="0.6" d="M100 222 Q200 198 300 222 M130 174 L140 350 M270 174 L260 350" />
+      <rect x="174" y="232" width="52" height="8" rx="4" fill={trim} opacity="0.75" />
+      {print === 'brand' && <Wordmark x={200} y={288} color="#f2f2f2" scale={0.55} />}
+      <ellipse cx="200" cy="390" rx="110" ry="12" fill="#000" opacity="0.3" />
+    </g>
+  )
+}
+
 const GARMENTS = {
   tee: Tee,
   hoodie: Hoodie,
   pants: CargoPants,
   puffer: Puffer,
   jacket: TrackJacket,
+  cap: Cap,
+  bag: CrossbodyBag,
 }
 
 export default function Garment({ type = 'tee', body = '#161616', trim = '#e6e6e6', print = null, back = false }) {

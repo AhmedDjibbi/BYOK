@@ -1,0 +1,71 @@
+.branded-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(270px, 30vw, 410px);
+  overflow: hidden;
+  background: #101010;
+}
+
+.branded-hero__photo {
+  position: absolute;
+  inset: 0;
+  background: url('/images/store-hero.jpg') center 34% / cover no-repeat;
+  filter: grayscale(1) brightness(0.52) contrast(1.08);
+  transform: scale(1.02);
+}
+
+.branded-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 6, 6, 0.94), rgba(6, 6, 6, 0.5) 55%, rgba(6, 6, 6, 0.22)),
+    linear-gradient(180deg, rgba(6, 6, 6, 0.72), transparent 36%, rgba(6, 6, 6, 0.8));
+}
+
+.branded-hero__inner {
+  position: relative;
+  z-index: 1;
+  padding-block: calc(var(--header-h) + 18px) clamp(24px, 3vw, 42px);
+}
+
+.branded-hero__eyebrow {
+  margin-bottom: 12px;
+  color: var(--lime);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.branded-hero__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.2em;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 7.7vw, 96px);
+  font-weight: 400;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.branded-hero__title span {
+  color: var(--lime);
+  font-family: var(--font-script);
+  font-size: 0.78em;
+  line-height: 1.15;
+  text-transform: none;
+  transform: rotate(-3deg);
+}
+
+.branded-hero__subtitle {
+  max-width: 56ch;
+  margin-top: 12px;
+  color: #dedede;
+  font-size: clamp(12px, 1.25vw, 16px);
+}
+

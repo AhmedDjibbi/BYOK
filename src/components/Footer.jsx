@@ -5,7 +5,14 @@ import './Footer.css'
 
 const languages = ['عربى', 'English', 'Français']
 
-const footerHrefs = { Shop: '#/store', About: '#/about' }
+const footerHrefs = {
+  Shop: '#/store',
+  About: '#/about',
+  'Returns & Exchanges': '#/returns',
+  Shipping: '#/shipping',
+  FAQ: '#/faq',
+  Contact: '#/contact',
+}
 
 export default function Footer() {
   const [language, setLanguage] = useState('عربى')

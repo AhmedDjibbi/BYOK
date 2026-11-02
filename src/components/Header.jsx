@@ -11,7 +11,7 @@ import {
 } from './Icons'
 import './Header.css'
 
-export default function Header({ page = 'home' }) {
+export default function Header({ page = 'home', cartCount = 0, wishlistCount = 0, onOpenCart }) {
   const activeLabel =
     { store: 'Shop', collections: 'Collections', about: 'About' }[page] ?? 'Home'
   const [stuck, setStuck] = useState(false)
@@ -56,8 +56,8 @@ export default function Header({ page = 'home' }) {
                 {item.menu && (
                   <ul className="nav__menu">
                     {item.menu.map((sub) => (
-                      <li key={sub}>
-                        <a href={item.href}>{sub}</a>
+                      <li key={sub.label}>
+                        <a href={sub.href}>{sub.label}</a>
                       </li>
                     ))}
                   </ul>
@@ -68,18 +68,27 @@ export default function Header({ page = 'home' }) {
         </nav>
 
         <div className="header__actions">
-          <button type="button" className="icon-btn" aria-label="Search">
+          <a className="icon-btn" href="#/search" aria-label="Search">
             <Search />
-          </button>
-          <button type="button" className="icon-btn header__wish" aria-label="Wishlist">
+          </a>
+          <a
+            className="icon-btn header__wish"
+            href="#/wishlist"
+            aria-label={`Wishlist, ${wishlistCount} saved ${wishlistCount === 1 ? 'item' : 'items'}`}
+          >
             <Heart />
-          </button>
-          <a className="icon-btn header__account" href="#footer" aria-label="Account">
+          </a>
+          <a className="icon-btn header__account" href="#/contact" aria-label="Contact BYOK">
             <User />
           </a>
-          <button type="button" className="icon-btn cart" aria-label="Cart, 0 items">
+          <button
+            type="button"
+            className="icon-btn cart"
+            aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
+            onClick={onOpenCart}
+          >
             <Cart />
-            <span className="cart__count">0</span>
+            <span className="cart__count">{cartCount}</span>
           </button>
           <button
             type="button"
@@ -101,17 +110,28 @@ export default function Header({ page = 'home' }) {
                 <a href={item.href} onClick={() => setMenuOpen(false)}>
                   {item.label}
                 </a>
+                {item.menu && (
+                  <ul className="mobile-nav__sublist">
+                    {item.menu.map((sub) => (
+                      <li key={sub.label}>
+                        <a href={sub.href} onClick={() => setMenuOpen(false)}>
+                          {sub.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
           <div className="mobile-nav__foot">
-            <a href="#footer" onClick={() => setMenuOpen(false)}>
+            <a href="#/returns" onClick={() => setMenuOpen(false)}>
               Returns &amp; Exchanges
             </a>
-            <a href="#footer" onClick={() => setMenuOpen(false)}>
+            <a href="#/shipping" onClick={() => setMenuOpen(false)}>
               Shipping
             </a>
-            <a href="#footer" onClick={() => setMenuOpen(false)}>
+            <a href="#/contact" onClick={() => setMenuOpen(false)}>
               Contact
             </a>
           </div>

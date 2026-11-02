@@ -5,12 +5,31 @@ import './Newsletter.css'
 export default function Newsletter() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    if (!email.trim()) return
-    setSent(true)
-    setEmail('')
+    setSubmitting(true)
+    setError('')
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          website: new FormData(event.currentTarget).get('website'),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Unable to subscribe right now.')
+      setSent(true)
+      setEmail('')
+    } catch (submissionError) {
+      setError(submissionError.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -26,7 +45,7 @@ export default function Newsletter() {
 
         {sent ? (
           <p className="newsletter__success" role="status">
-            You&rsquo;re in. Watch your inbox for the next drop.
+            You&rsquo;re in. Your subscription has been saved.
           </p>
         ) : (
           <form className="newsletter__form" onSubmit={handleSubmit}>
@@ -42,13 +61,23 @@ export default function Newsletter() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              maxLength={254}
             />
-            <button type="submit" className="btn btn--lime newsletter__submit">
-              Subscribe
-              <ArrowRight />
+            <input
+              className="newsletter__trap"
+              type="text"
+              name="website"
+              tabIndex="-1"
+              autoComplete="off"
+              aria-hidden="true"
+            />
+            <button type="submit" className="btn btn--lime newsletter__submit" disabled={submitting}>
+              {submitting ? 'Saving...' : 'Subscribe'}
+              {!submitting && <ArrowRight />}
             </button>
           </form>
         )}
+        {error && <p className="newsletter__error" role="alert">{error}</p>}
 
         <ul className="socials" aria-label="BYOK on social media">
           <li>

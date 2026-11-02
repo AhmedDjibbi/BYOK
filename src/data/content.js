@@ -209,16 +209,28 @@ export const mainNav = [
   {
     label: 'Shop',
     href: '#/store',
-    menu: ['New Arrivals', 'T-Shirts', 'Hoodies', 'Bottoms', 'Outerwear', 'Accessories'],
+    menu: [
+      { label: 'New Arrivals', href: '#/store?sort=new' },
+      { label: 'T-Shirts', href: '#/store?category=tshirts' },
+      { label: 'Hoodies', href: '#/store?category=hoodies' },
+      { label: 'Bottoms', href: '#/store?category=pants' },
+      { label: 'Outerwear', href: '#/store?category=jackets' },
+      { label: 'Accessories', href: '#/store?category=accessories' },
+    ],
   },
   {
     label: 'Collections',
     href: '#/collections',
-    menu: ['The New Drop', 'Streetwear Essentials', 'Archive', 'Accessories'],
+    menu: [
+      { label: 'The New Drop', href: '#/collections/new-drop' },
+      { label: 'Streetwear Essentials', href: '#/collections/essentials' },
+      { label: 'Archive', href: '#/collections/archive' },
+      { label: 'Accessories', href: '#/collections/accessories' },
+    ],
   },
   { label: 'About', href: '#/about' },
-  { label: 'Journal', href: '#journal' },
-  { label: 'Contact', href: '#footer' },
+  { label: 'Journal', href: '#/journal' },
+  { label: 'Contact', href: '#/contact' },
 ]
 
 export const footerNav = [
@@ -228,4 +240,34 @@ export const footerNav = [
   'Shipping',
   'FAQ',
   'Contact',
+]
+
+export const journalEntries = [
+  {
+    id: 'uniform-for-your-own-rules',
+    category: 'Style notes',
+    title: 'A uniform for your own rules',
+    excerpt: 'Build a rotation around the pieces you reach for, then make it yours.',
+    body: 'Personal style is not about following a formula. Start with one dependable layer, add a piece with character, and wear both your way. The best outfit is the one that feels like you.',
+    image: unsplash('photo-1529139574466-a303027c1d8b', 1000),
+    alt: 'Streetwear styling in an urban setting',
+  },
+  {
+    id: 'designing-for-everyday-motion',
+    category: 'Behind the movement',
+    title: 'Designed for everyday motion',
+    excerpt: 'The everyday details that make a favourite piece earn its place.',
+    body: 'Clothes should move with the day. We look for easy layers, useful details and silhouettes that make getting dressed feel natural, whether the plan is set or still taking shape.',
+    image: unsplash('photo-1503342217505-b0a15ec3261c', 1000),
+    alt: 'Casual streetwear look outdoors',
+  },
+  {
+    id: 'wear-it-your-way',
+    category: 'Community',
+    title: 'Wear it your way',
+    excerpt: 'There is no single way to be part of the movement.',
+    body: 'BYOK is for the dreamers, the makers and everyone finding their own direction. Your combination, your pace, your point of view. That is what makes a look yours.',
+    image: unsplash('photo-1490481651871-ab68de25d43d', 1000),
+    alt: 'Creative streetwear editorial',
+  },
 ]

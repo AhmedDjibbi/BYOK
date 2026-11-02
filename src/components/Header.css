@@ -227,6 +227,23 @@
   color: var(--lime);
 }
 
+.mobile-nav__sublist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+  padding: 4px 0 12px;
+}
+
+.mobile-nav__sublist a {
+  padding: 10px 0;
+  border-bottom: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  color: #a7a7a7;
+}
+
 .mobile-nav__foot {
   display: flex;
   flex-wrap: wrap;

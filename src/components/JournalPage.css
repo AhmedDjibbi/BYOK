@@ -1,0 +1,123 @@
+.journal-page,
+.journal-article {
+  background: var(--bg);
+}
+
+.journal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.4vw, 34px);
+  padding-block: clamp(28px, 4vw, 56px) clamp(42px, 5vw, 72px);
+}
+
+.journal-card {
+  min-width: 0;
+}
+
+.journal-card__image {
+  position: relative;
+  display: block;
+  aspect-ratio: 1.24 / 1;
+  overflow: hidden;
+  background: #171717;
+}
+
+.journal-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.82) brightness(0.78);
+  transition: filter 0.3s ease, transform 0.5s ease;
+}
+
+.journal-card__image:hover img {
+  filter: grayscale(0.5) brightness(0.9);
+  transform: scale(1.035);
+}
+
+.journal-card__image span {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  color: var(--lime);
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+
+.journal-card__category {
+  margin-top: 18px;
+  color: var(--lime);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.journal-card h2 {
+  margin-top: 8px;
+  font-family: var(--font-section);
+  font-size: clamp(21px, 2.2vw, 30px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.journal-card h2 a:hover {
+  color: var(--lime);
+}
+
+.journal-card__excerpt {
+  min-height: 48px;
+  margin-top: 9px;
+  color: #9c9c9c;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.journal-card .link-arrow {
+  margin-top: 10px;
+}
+
+.journal-article__body {
+  display: grid;
+  justify-items: start;
+  gap: 25px;
+  padding-block: 30px 60px;
+}
+
+.journal-article__back-icon {
+  transform: rotate(180deg);
+}
+
+.journal-article__body > img {
+  width: min(100%, 900px);
+  max-height: 520px;
+  object-fit: cover;
+  filter: grayscale(0.6);
+}
+
+.journal-article__body > p {
+  max-width: 68ch;
+  color: #ccc;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.journal-article__missing {
+  display: grid;
+  min-height: 360px;
+  align-content: center;
+  justify-items: start;
+  gap: 18px;
+}
+
+@media (max-width: 760px) {
+  .journal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .journal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

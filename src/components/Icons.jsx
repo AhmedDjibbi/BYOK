@@ -196,3 +196,21 @@ export const Close = (props) => (
     <path d="M6 6l12 12M18 6 6 18" />
   </Svg>
 )
+
+export const Plus = (props) => (
+  <Svg {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </Svg>
+)
+
+export const Minus = (props) => (
+  <Svg {...props}>
+    <path d="M5 12h14" />
+  </Svg>
+)
+
+export const Trash = (props) => (
+  <Svg {...props}>
+    <path d="M4.5 7h15M9 7V4.5h6V7m3.5 0-.8 13h-11L5.9 7M10 10v6m4-6v6" />
+  </Svg>
+)

@@ -41,10 +41,20 @@
 }
 
 .newsletter__form {
+  position: relative;
   display: flex;
   align-items: stretch;
   width: min(100%, 336px);
   justify-self: center;
+}
+
+.newsletter__form .newsletter__trap {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .newsletter__form input {
@@ -93,6 +103,14 @@
   min-height: 42px;
   font-size: 12px;
   color: var(--lime);
+  text-align: center;
+}
+
+.newsletter__error {
+  grid-column: 1 / -1;
+  margin-top: -12px;
+  color: #ff7777;
+  font-size: 10px;
   text-align: center;
 }
 
