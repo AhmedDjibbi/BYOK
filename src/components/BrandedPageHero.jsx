@@ -1,14 +1,14 @@
 import { ChevronRight } from './Icons'
 import './BrandedPageHero.css'
 
-export default function BrandedPageHero({ eyebrow = 'BYOK / The movement', title, accent, subtitle }) {
+export default function BrandedPageHero({ eyebrow = 'BYOC / The movement', title, accent, subtitle }) {
   return (
     <header className="branded-hero">
       <div className="branded-hero__photo" aria-hidden="true" />
       <div className="branded-hero__scrim" aria-hidden="true" />
       <div className="container branded-hero__inner">
         <nav className="breadcrumb" aria-label="Breadcrumb">
-          <a href="#/">Home</a>
+          <a href="/">Home</a>
           <ChevronRight size={10} strokeWidth={2} />
           <span aria-current="page">{title}</span>
         </nav>

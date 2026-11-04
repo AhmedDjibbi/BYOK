@@ -37,7 +37,7 @@ export default function AboutPage() {
 
         <div className="container about-hero__inner">
           <nav className="breadcrumb" aria-label="Breadcrumb">
-            <a href="#/">Home</a>
+            <a href="/">Home</a>
             <ChevronRight size={10} strokeWidth={2} />
             <span aria-current="page">About</span>
           </nav>
@@ -60,7 +60,7 @@ export default function AboutPage() {
             </h2>
             <div className="about-story__text">
               <p>
-                BYOK was created for those who never settle.
+                BYOC was created for those who never settle.
                 <br />
                 For the dreamers, the builders, the ones who move different.
               </p>
@@ -68,13 +68,13 @@ export default function AboutPage() {
                 We blend streetwear with a bold mindset &mdash; inspired by
                 culture, creativity and the future.
               </p>
-              <p>More than just clothes, BYOK is a lifestyle.</p>
+              <p>More than just clothes, BYOC is a lifestyle.</p>
             </div>
           </div>
         </section>
 
         <section className="about-why" aria-labelledby="about-why-title">
-          <p className="about-eyebrow about-eyebrow--center">Why BYOK?</p>
+          <p className="about-eyebrow about-eyebrow--center">Why BYOC?</p>
           <h2 className="about-why__title" id="about-why-title">
             More than just fashion
           </h2>
@@ -123,8 +123,8 @@ export default function AboutPage() {
             Join the
             <span className="about-join__script">Movement</span>
           </h2>
-          <p className="about-join__tag">Wear BYOK. Be different.</p>
-          <a className="btn btn--lime" href="#/store">
+          <p className="about-join__tag">Wear BYOC. Be different.</p>
+          <a className="btn btn--lime" href="/store">
             Shop now
             <ArrowRight />
           </a>

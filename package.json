@@ -1,5 +1,5 @@
 {
-  "name": "byok",
+  "name": "byoc",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,25 +12,39 @@
     "db:backup": "node server/backup.js",
     "build": "vite build",
     "lint": "oxlint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.3",
     "helmet": "^8.3.0",
     "mongoose": "^9.11.4",
     "nodemailer": "^10.3.1",
+    "rate-limit-redis": "^6.0.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "redis": "^6.3.1",
     "twilio": "^6.2.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.1.0",
     "concurrently": "^10.0.6",
+    "jsdom": "^30.1.3",
+    "mongodb-memory-server": "^11.3.0",
     "oxlint": "^1.89.0",
-    "vite": "^8.3.5"
+    "supertest": "^7.3.1",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
   }
 }

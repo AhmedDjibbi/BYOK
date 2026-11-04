@@ -1,7 +1,7 @@
 import { useId } from 'react'
 
 /* ==========================================================================
-   BYOK — vector garment mockups for the store grid
+   BYOC — vector garment mockups for the store grid
    Renders studio-style product shots on a dark gradient backdrop.
    ========================================================================== */
 
@@ -26,7 +26,7 @@ const Star = ({ x, y, scale = 1, color = '#d02020', opacity = 1 }) => (
   </g>
 )
 
-const Wordmark = ({ x, y, scale = 1, color = '#111', text = 'BYOK', opacity = 1 }) => (
+const Wordmark = ({ x, y, scale = 1, color = '#111', text = 'BYOC', opacity = 1 }) => (
   <text
     x={x}
     y={y}
@@ -62,9 +62,9 @@ function Tee({ uid, body, trim, print, back }) {
       <path fill="none" stroke="#000" strokeWidth="2" opacity="0.35" d="M104 80 L124 170 M296 80 L276 170" />
       {!back && print === 'logo' && <Logo x={200} y={214} scale={1.25} color="#f4f4f4" />}
       {!back && print === 'star' && <Star x={200} y={210} scale={1.15} color="#d02020" />}
-      {!back && print === 'word' && <Wordmark x={200} y={220} color="#141414" text="BYOK" />}
+      {!back && print === 'word' && <Wordmark x={200} y={220} color="#141414" text="BYOC" />}
       {!back && print === 'brand' && (
-        <Wordmark x={200} y={220} color="#f2f2f2" text="BYOK" scale={0.55} />
+        <Wordmark x={200} y={220} color="#f2f2f2" text="BYOC" scale={0.55} />
       )}
       {!back && print === 'word-light' && <Wordmark x={200} y={220} color="#dcdcdc" text="NEXORA" />}
       {back && print === 'logo' && <Logo x={200} y={210} scale={1.55} color="#f4f4f4" />}

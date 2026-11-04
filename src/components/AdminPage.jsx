@@ -1,19 +1,9 @@
 import { useCallback, useState } from 'react'
+import { apiRequest } from '../lib/api'
 import './AdminPage.css'
 
-async function adminRequest(token, path, options = {}) {
-  const response = await fetch(`/api/admin${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-  })
-  const result = await response.json()
-  if (!response.ok) throw new Error(result.error || 'Staff request failed.')
-  return result
-}
+const adminRequest = (token, path, options = {}) =>
+  apiRequest(`/admin${path}`, { ...options, token })
 
 export default function AdminPage() {
   const [token, setToken] = useState('')
@@ -27,6 +17,13 @@ export default function AdminPage() {
   const [inventory, setInventory] = useState([])
   const [statusFilter, setStatusFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [collectionSaving, setCollectionSaving] = useState(false)
+  const [shippingSettings, setShippingSettings] = useState({
+    mode: 'fixed',
+    value: 0,
+    currency: 'TND',
+  })
+  const [shippingSaving, setShippingSaving] = useState(false)
   const [stockChanges, setStockChanges] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -47,10 +44,13 @@ export default function AdminPage() {
         limit: '50',
       })
       if (orderStatus) query.set('status', orderStatus)
-      const [orderData, contactData, inventoryData] = await Promise.all([
+      const [orderData, contactData, inventoryData, shippingData, collectionData, subscriberData] = await Promise.all([
         adminRequest(staffToken, `/orders?${query}`),
         adminRequest(staffToken, `/contacts?${contactQuery}`),
         adminRequest(staffToken, '/inventory'),
+        adminRequest(staffToken, '/settings/shipping'),
+        adminRequest(staffToken, '/collections'),
+        adminRequest(staffToken, '/subscribers'),
       ])
       setOrders(orderData.orders)
       setTotalOrders(orderData.total)
@@ -59,6 +59,10 @@ export default function AdminPage() {
       setTotalContacts(contactData.total)
       setContactPage(contactData.page)
       setInventory(inventoryData.inventory)
+      setShippingSettings(shippingData.shipping)
+      setCollections(collectionData.collections)
+      setSubscribers(subscriberData.subscribers)
+      setTotalSubscribers(subscriberData.total)
       setStockChanges({})
       setActiveToken(staffToken)
       return true
@@ -82,7 +86,7 @@ export default function AdminPage() {
     try {
       const result = await adminRequest(activeToken, `/orders/${orderId}/status`, {
         method: 'PATCH',
-        body: JSON.stringify({ status }),
+        body: { status },
       })
       setNotice(`Order updated to ${status}. Notifications: email ${result.notification.email}, SMS ${result.notification.sms}.`)
       await loadData(activeToken)
@@ -100,7 +104,7 @@ export default function AdminPage() {
       const result = await adminRequest(
         activeToken,
         `/inventory/${encodeURIComponent(item.productId)}/${encodeURIComponent(item.size)}`,
-        { method: 'PUT', body: JSON.stringify({ quantity, expectedQuantity: item.quantity }) },
+        { method: 'PUT', body: { quantity, expectedQuantity: item.quantity } },
       )
       setInventory((current) => current.map((entry) =>
         entry.productId === item.productId && entry.size === item.size
@@ -118,6 +122,99 @@ export default function AdminPage() {
     }
   }
 
+  const saveShipping = async (event) => {
+    event.preventDefault()
+    setShippingSaving(true)
+    setError('')
+    setNotice('')
+    try {
+      const result = await adminRequest(activeToken, '/settings/shipping', {
+        method: 'PUT',
+        body: { shipping: shippingSettings },
+      })
+      setShippingSettings(result.shipping)
+      setNotice('Shipping settings saved.')
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setShippingSaving(false)
+    }
+  }
+
+  const deleteCollection = async (collection) => {
+    if (!window.confirm(`Delete collection “${collection.name}”?`)) return
+    setError('')
+    setNotice('')
+    try {
+      await adminRequest(activeToken, `/collections/${collection.id}`, { method: 'DELETE' })
+      await loadData(activeToken)
+      setNotice(`Collection deleted: ${collection.name}`)
+    } catch (requestError) {
+      setError(requestError.message)
+    }
+  }
+
+  const toggleCollection = async (collection) => {
+    setCollectionSaving(true)
+    setError('')
+    setNotice('')
+    try {
+      const result = await adminRequest(activeToken, `/collections/${collection.id}`, {
+        method: 'PATCH',
+        body: { active: !collection.active },
+      })
+      setNotice(`Collection ${result.collection.active ? 'activated' : 'deactivated'}: ${result.collection.name}`)
+      await loadData(activeToken)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setCollectionSaving(false)
+    }
+  }
+
+  const createCollection = async (event) => {
+    event.preventDefault()
+    const name = newCollectionName.trim()
+    if (!name) return
+    setCollectionSaving(true)
+    setError('')
+    setNotice('')
+    try {
+      const result = await adminRequest(activeToken, '/collections', {
+        method: 'POST',
+        body: { name },
+      })
+      setNewCollectionName('')
+      setNotice(`Collection created: ${result.collection.name}`)
+      await loadData(activeToken)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setCollectionSaving(false)
+    }
+  }
+
+  const exportSubscribers = async () => {
+    setError('')
+    setNotice('')
+    try {
+      const response = await fetch('/api/admin/subscribers/export', {
+        headers: { Authorization: `Bearer ${activeToken}` },
+      })
+      if (!response.ok) throw new Error('Unable to export subscribers.')
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'newsletter-subscribers.csv'
+      link.click()
+      URL.revokeObjectURL(url)
+      setNotice('Subscriber list exported.')
+    } catch (requestError) {
+      setError(requestError.message)
+    }
+  }
+
   const filteredInventory = inventory.filter((item) =>
     `${item.name} ${item.colorway} ${item.size}`.toLowerCase().includes(search.toLowerCase()),
   )
@@ -126,8 +223,8 @@ export default function AdminPage() {
     return (
       <main className="admin-page">
         <div className="admin-login">
-          <a className="admin-logo" href="#/">BYOK</a>
-          <p className="admin-eyebrow">Staff access / BYOK</p>
+          <a className="admin-logo" href="/">BYOC</a>
+          <p className="admin-eyebrow">Staff access / BYOC</p>
           <h1>Store management</h1>
           <p>Enter the staff API token configured on the server.</p>
           <form onSubmit={signIn}>
@@ -143,7 +240,7 @@ export default function AdminPage() {
             {error && <p className="admin-error" role="alert">{error}</p>}
             <button type="submit" disabled={loading}>{loading ? 'Checking...' : 'Sign in'}</button>
           </form>
-          <a className="admin-back" href="#/">Back to BYOK storefront</a>
+          <a className="admin-back" href="/">Back to BYOC storefront</a>
         </div>
       </main>
     )
@@ -152,7 +249,7 @@ export default function AdminPage() {
   return (
     <main className="admin-page">
       <header className="admin-header">
-        <a className="admin-logo" href="#/">BYOK</a>
+        <a className="admin-logo" href="/">BYOC</a>
         <p>Store management</p>
         <button
           type="button"
@@ -247,6 +344,16 @@ export default function AdminPage() {
                     </div>
                     <span className={`admin-status admin-status--${order.status}`}>{order.status}</span>
                   </div>
+                  {(order.status === 'pending' && order.expiresAt) || order.cancelReason ? (
+                    <div className="admin-order__expiry">
+                      {order.status === 'pending' && order.expiresAt && (
+                        <span>Reserved until {new Date(order.expiresAt).toLocaleString()}</span>
+                      )}
+                      {order.cancelReason && (
+                        <span>Cancel reason: {order.cancelReason}</span>
+                      )}
+                    </div>
+                  ) : null}
                   <div className="admin-order__customer">
                     <strong>{order.customer.name}</strong>
                     <span>{order.customer.email} · {order.customer.phone}</span>
@@ -297,6 +404,146 @@ export default function AdminPage() {
               </button>
             </nav>
           )}
+        </section>
+
+        <section className="admin-section">
+          <div className="admin-section__heading">
+            <div>
+              <p className="admin-eyebrow">Settings / Shipping</p>
+              <h2>Shipping rules</h2>
+            </div>
+          </div>
+          <form className="admin-shipping" onSubmit={saveShipping}>
+            <label>
+              Mode
+              <select
+                value={shippingSettings.mode}
+                onChange={(event) =>
+                  setShippingSettings((current) => ({
+                    ...current,
+                    mode: event.target.value,
+                  }))
+                }
+              >
+                <option value="fixed">Fixed amount</option>
+                <option value="percentage">Percentage of subtotal</option>
+              </select>
+            </label>
+            <label>
+              {shippingSettings.mode === 'fixed' ? 'Amount (TND)' : 'Percent (%)'}
+              <input
+                type="number"
+                min="0"
+                step={shippingSettings.mode === 'fixed' ? '0.01' : '1'}
+                value={shippingSettings.value}
+                onChange={(event) =>
+                  setShippingSettings((current) => ({
+                    ...current,
+                    value: Number(event.target.value),
+                  }))
+                }
+              />
+            </label>
+            <label>
+              Currency
+              <input
+                type="text"
+                maxLength="3"
+                value={shippingSettings.currency}
+                onChange={(event) =>
+                  setShippingSettings((current) => ({
+                    ...current,
+                    currency: event.target.value,
+                  }))
+                }
+              />
+            </label>
+            <button type="submit" disabled={shippingSaving}>
+              {shippingSaving ? 'Saving…' : 'Save shipping'}
+            </button>
+            <p className="admin-shipping__example">
+              Example: a 100 TND cart pays{' '}
+              {shippingSettings.mode === 'fixed'
+                ? `${Number(shippingSettings.value || 0)} ${shippingSettings.currency}`
+                : `${Math.round((100 * Number(shippingSettings.value || 0)) / 100)} ${shippingSettings.currency}`}
+              {' '}shipping.
+            </p>
+          </form>
+        </section>
+
+        <section className="admin-section">
+          <div className="admin-section__heading">
+            <div>
+              <p className="admin-eyebrow">Collections / {collections.length}</p>
+              <h2>Collection management</h2>
+            </div>
+          </div>
+          <form className="admin-collection-create" onSubmit={createCollection}>
+            <input
+              type="text"
+              value={newCollectionName}
+              onChange={(event) => setNewCollectionName(event.target.value)}
+              placeholder="New collection name"
+              required
+            />
+            <button type="submit" disabled={collectionSaving}>
+              {collectionSaving ? 'Saving…' : 'Create'}
+            </button>
+          </form>
+          <div className="admin-collection-list">
+            {collections.map((collection) => (
+              <article className="admin-collection" key={collection.id}>
+                <div>
+                  <strong>{collection.name}</strong>
+                  <span>{collection.slug} · {collection.productCount} products</span>
+                </div>
+                <button type="button" onClick={() => toggleCollection(collection)} disabled={collectionSaving}>
+                  {collection.active ? 'Deactivate' : 'Reactivate'}
+                </button>
+                <button
+                  type="button"
+                  className="admin-button--danger"
+                  onClick={() => deleteCollection(collection)}
+                >
+                  Delete
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="admin-section">
+          <div className="admin-section__heading">
+            <div>
+              <p className="admin-eyebrow">Newsletter / {totalSubscribers} subscribers</p>
+              <h2>Subscribers</h2>
+            </div>
+            <button type="button" onClick={exportSubscribers}>Export CSV</button>
+          </div>
+          <div className="admin-subscriber-list">
+            {subscribers.map((subscriber) => (
+              <p key={subscriber._id ?? subscriber.email}>
+                {subscriber.email} · {subscriber.status}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        <section className="admin-section">
+          <div className="admin-section__heading">
+            <div>
+              <p className="admin-eyebrow">Newsletter / {totalSubscribers} subscribers</p>
+              <h2>Subscribers</h2>
+            </div>
+            <button type="button" onClick={exportSubscribers}>Export CSV</button>
+          </div>
+          <div className="admin-subscriber-list">
+            {subscribers.map((subscriber) => (
+              <p key={subscriber._id ?? subscriber.email}>
+                {subscriber.email} · {subscriber.status}
+              </p>
+            ))}
+          </div>
         </section>
 
         <section className="admin-section">

@@ -6,12 +6,12 @@ import './Footer.css'
 const languages = ['عربى', 'English', 'Français']
 
 const footerHrefs = {
-  Shop: '#/store',
-  About: '#/about',
-  'Returns & Exchanges': '#/returns',
-  Shipping: '#/shipping',
-  FAQ: '#/faq',
-  Contact: '#/contact',
+  Shop: '/store',
+  About: '/about',
+  'Returns & Exchanges': '/returns',
+  Shipping: '/shipping',
+  FAQ: '/faq',
+  Contact: '/contact',
 }
 
 export default function Footer() {
@@ -22,8 +22,8 @@ export default function Footer() {
     <footer className="footer" id="footer">
       <div className="container">
         <div className="footer__top">
-          <a className="logo footer__logo" href="#/" aria-label="BYOK home">
-            BYOK
+          <a className="logo footer__logo" href="/" aria-label="BYOC home">
+            BYOC
           </a>
 
           <nav className="footer__nav" aria-label="Footer navigation">
@@ -85,7 +85,7 @@ export default function Footer() {
 
       <div className="footer__bottom">
         <div className="container">
-          <p>© 2025 BYOK. All rights reserved.</p>
+          <p>© 2025 BYOC. All rights reserved.</p>
         </div>
       </div>
     </footer>

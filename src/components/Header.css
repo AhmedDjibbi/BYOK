@@ -17,6 +17,8 @@
 }
 
 .header__inner {
+  position: relative;
+  z-index: 62;
   display: flex;
   align-items: center;
   gap: clamp(18px, 3.4vw, 56px);
@@ -181,6 +183,13 @@
   display: none;
 }
 
+.header__burger[aria-expanded='true'] {
+  border-radius: 50%;
+  background: rgba(204, 255, 0, 0.12);
+  color: var(--lime);
+  box-shadow: inset 0 0 0 1px rgba(204, 255, 0, 0.45);
+}
+
 /* ---------- mobile panel ---------- */
 
 .mobile-nav {
@@ -264,6 +273,9 @@
 
   .header__burger {
     display: grid;
+    width: 40px;
+    height: 40px;
+    margin-right: -5px;
   }
 
   .header__actions {

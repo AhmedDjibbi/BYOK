@@ -14,6 +14,9 @@ const productSchema = new mongoose.Schema(
     color: { type: String, required: true },
     colorway: { type: String, required: true },
     added: { type: Number, required: true },
+    collectionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Collection', index: true },
+    shippingOverride: { type: Number, min: 0, default: null },
+    active: { type: Boolean, default: true },
   },
   { timestamps: true },
 )

@@ -4,7 +4,7 @@ const unsplash = (id, width) =>
 export const heroSlides = [
   {
     image: unsplash('photo-1523398002811-999ca8dec234', 2000),
-    alt: 'Two models wearing BYOK black outerwear against a concrete wall',
+    alt: 'Two models wearing BYOC black outerwear against a concrete wall',
   },
   {
     image: unsplash('photo-1529139574466-a303027c1d8b', 2000),
@@ -98,7 +98,7 @@ export const collections = [
 
 export const collectionsHero = {
   image: unsplash('photo-1529139574466-a303027c1d8b', 2000),
-  alt: 'Model in a black BYOK hoodie and sunglasses against a concrete wall',
+  alt: 'Model in a black BYOC hoodie and sunglasses against a concrete wall',
 }
 
 export const collectionTiles = [
@@ -153,12 +153,12 @@ export const movementBanner = {
 
 export const aboutHero = {
   image: unsplash('photo-1620799140408-edc6dcb6d633', 2000),
-  alt: 'Model seen from behind in a black hoodie with a large BYOK print',
+  alt: 'Model seen from behind in a black hoodie with a large BYOC print',
 }
 
 export const aboutStory = {
   image: unsplash('photo-1487958449943-2429e8be8625', 1400),
-  alt: 'Concrete building with BYOK lettering on the facade',
+  alt: 'Concrete building with BYOC lettering on the facade',
 }
 
 export const aboutValues = [
@@ -196,41 +196,44 @@ export const aboutStats = [
 
 export const aboutJoin = {
   image: unsplash('photo-1552374196-c4e7ffc6e126', 2000),
-  alt: 'Model in a black BYOK hoodie and sunglasses standing against concrete',
+  alt: 'Model in a black BYOC hoodie and sunglasses standing against concrete',
 }
 
 export const storyImage = {
   image: unsplash('photo-1503342217505-b0a15ec3261c', 1200),
-  alt: 'BYOK model sitting on concrete stairs',
+  alt: 'BYOC model sitting on concrete stairs',
 }
 
 export const mainNav = [
-  { label: 'Home', href: '#/' },
+  { label: 'Home', href: '/' },
   {
     label: 'Shop',
-    href: '#/store',
+    href: '/store',
     menu: [
-      { label: 'New Arrivals', href: '#/store?sort=new' },
-      { label: 'T-Shirts', href: '#/store?category=tshirts' },
-      { label: 'Hoodies', href: '#/store?category=hoodies' },
-      { label: 'Bottoms', href: '#/store?category=pants' },
-      { label: 'Outerwear', href: '#/store?category=jackets' },
-      { label: 'Accessories', href: '#/store?category=accessories' },
+      { label: 'New Arrivals', href: '/store?sort=new' },
+      { label: 'T-Shirts', href: '/store?category=tshirts' },
+      { label: 'Hoodies', href: '/store?category=hoodies' },
+      { label: 'Bottoms', href: '/store?category=pants' },
+      { label: 'Outerwear', href: '/store?category=jackets' },
+      { label: 'Accessories', href: '/store?category=accessories' },
     ],
   },
   {
     label: 'Collections',
-    href: '#/collections',
+    href: '/collections',
     menu: [
-      { label: 'The New Drop', href: '#/collections/new-drop' },
-      { label: 'Streetwear Essentials', href: '#/collections/essentials' },
-      { label: 'Archive', href: '#/collections/archive' },
-      { label: 'Accessories', href: '#/collections/accessories' },
+      { label: 'All Collections', href: '/collections' },
+      { label: 'T-Shirts', href: '/collections/tshirts' },
+      { label: 'Hoodies', href: '/collections/hoodies' },
+      { label: 'Pants', href: '/collections/pants' },
+      { label: 'Jackets', href: '/collections/jackets' },
+      { label: 'Accessories', href: '/collections/accessories' },
+      { label: 'All Products', href: '/store' },
     ],
   },
-  { label: 'About', href: '#/about' },
-  { label: 'Journal', href: '#/journal' },
-  { label: 'Contact', href: '#/contact' },
+  { label: 'About', href: '/about' },
+  { label: 'Journal', href: '/journal' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 export const footerNav = [
@@ -266,7 +269,7 @@ export const journalEntries = [
     category: 'Community',
     title: 'Wear it your way',
     excerpt: 'There is no single way to be part of the movement.',
-    body: 'BYOK is for the dreamers, the makers and everyone finding their own direction. Your combination, your pace, your point of view. That is what makes a look yours.',
+    body: 'BYOC is for the dreamers, the makers and everyone finding their own direction. Your combination, your pace, your point of view. That is what makes a look yours.',
     image: unsplash('photo-1490481651871-ab68de25d43d', 1000),
     alt: 'Creative streetwear editorial',
   },

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BYOK — store catalogue data
+   BYOC — store catalogue data
    12 core designs, each released in four colourways → 48 products.
    ========================================================================== */
 

@@ -1,19 +1,19 @@
-import 'dotenv/config'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
+import { config } from './config.js'
 
 const execFileAsync = promisify(execFile)
-const mongoUri = process.env.MONGODB_URI
+const mongoUri = config.mongoUri
 
 if (!mongoUri) {
   console.error('MONGODB_URI is required to create a database backup.')
   process.exit(1)
 }
 
-const outputDirectory = resolve(process.env.BACKUP_DIR || 'backups')
+const outputDirectory = resolve(config.backupDir)
 const timestamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-')
 const archivePath = join(outputDirectory, `byok-${timestamp}.archive.gz`)
 const temporaryDirectory = await mkdtemp(join(tmpdir(), 'byok-backup-'))

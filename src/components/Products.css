@@ -2,6 +2,17 @@
   padding-top: clamp(34px, 3.4vw, 52px);
 }
 
+.products__notice {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #4a3020;
+  border-radius: 4px;
+  background: #1a120c;
+  color: #e0b68b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .products__carousel {
   position: relative;
 }

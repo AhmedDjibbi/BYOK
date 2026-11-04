@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://byoc.example/</loc></url>
+  <url><loc>https://byoc.example/store</loc></url>
+  <url><loc>https://byoc.example/collections</loc></url>
+  <url><loc>https://byoc.example/about</loc></url>
+  <url><loc>https://byoc.example/contact</loc></url>
+  <url><loc>https://byoc.example/faq</loc></url>
+  <url><loc>https://byoc.example/shipping</loc></url>
+  <url><loc>https://byoc.example/returns</loc></url>
+</urlset>

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { config } from '../config.js'
 
 const orderSchema = new mongoose.Schema(
   {
@@ -19,14 +20,44 @@ const orderSchema = new mongoose.Schema(
         quantity: { type: Number, required: true, min: 1, max: 10 },
       },
     ],
+    subtotal: { type: Number, required: true, min: 0, default: 0 },
+    shippingFee: { type: Number, required: true, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
+    shippingSnapshot: {
+      mode: { type: String, enum: ['fixed', 'percentage'] },
+      value: { type: Number },
+      currency: { type: String },
+      globalBase: { type: Number },
+      overrideTotal: { type: Number },
+    },
     status: {
       type: String,
       enum: ['pending', 'confirmed', 'cancelled', 'fulfilled'],
       default: 'pending',
     },
+    expiresAt: {
+      type: Date,
+      required: true,
+      default: () =>
+        new Date(Date.now() + config.pendingOrderTtlHours * 60 * 60 * 1000),
+    },
+    cancelReason: { type: String, trim: true },
+    stockReleasedAt: { type: Date },
+    statusHistory: {
+      type: [
+        {
+          status: { type: String, required: true },
+          at: { type: Date, required: true, default: Date.now },
+          note: { type: String, trim: true },
+        },
+      ],
+      default: () => [{ status: 'pending', at: new Date(), note: 'Order placed' }],
+    },
   },
   { timestamps: true },
 )
+
+orderSchema.index({ status: 1, expiresAt: 1 })
+orderSchema.index({ status: 1, cancelReason: 1, stockReleasedAt: 1 })
 
 export default mongoose.model('Order', orderSchema)

@@ -1,43 +1,94 @@
-import 'dotenv/config'
 import mongoose from 'mongoose'
 import { storeCatalogue } from '../src/data/store.js'
+import Collection from './models/Collection.js'
 import Inventory from './models/Inventory.js'
 import Product from './models/Product.js'
+import { config } from './config.js'
 
-if (!process.env.MONGODB_URI) {
+if (!config.mongoUri) {
   console.error('MONGODB_URI is required. Copy .env.example to .env and configure it.')
   process.exit(1)
 }
 
+const seedReset = process.env.SEED_RESET === '1'
+
 try {
-  await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 5000 })
+  await mongoose.connect(config.mongoUri, { serverSelectionTimeoutMS: 5000 })
+
+  const collectionDefinitions = [
+    { name: 'T-Shirts', slug: 'tshirts', category: 'tshirts' },
+    { name: 'Hoodies', slug: 'hoodies', category: 'hoodies' },
+    { name: 'Pants', slug: 'pants', category: 'pants' },
+    { name: 'Jackets', slug: 'jackets', category: 'jackets' },
+    { name: 'Accessories', slug: 'accessories', category: 'accessories' },
+  ]
+  const collectionsByCategory = new Map()
+  for (const [index, definition] of collectionDefinitions.entries()) {
+    const collection = await Collection.findOneAndUpdate(
+      { slug: definition.slug },
+      {
+        $setOnInsert: {
+          name: definition.name,
+          slug: definition.slug,
+          description: `${definition.name} from the BYOC catalogue.`,
+          active: true,
+          sortOrder: index,
+        },
+      },
+      { upsert: true, new: true },
+    )
+    collectionsByCategory.set(definition.category, collection._id)
+  }
+
   const operations = storeCatalogue.map((product) => ({
     updateOne: {
       filter: { productId: product.id },
-      update: {
-        $set: {
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          category: product.category,
-          badge: product.badge,
-          garment: product.garment,
-          colors: product.colors,
-          activeColor: product.activeColor,
-          sizes: product.sizes,
-          color: product.color,
-          colorway: product.colorway,
-          added: product.added,
-        },
-      },
+      update: seedReset
+        ? {
+            $set: {
+              productId: product.id,
+              name: product.name,
+              price: product.price,
+              category: product.category,
+              badge: product.badge,
+              garment: product.garment,
+              colors: product.colors,
+              activeColor: product.activeColor,
+              sizes: product.sizes,
+              color: product.color,
+              colorway: product.colorway,
+              added: product.added,
+              collectionId: collectionsByCategory.get(product.category),
+            },
+          }
+        : {
+            $setOnInsert: {
+              productId: product.id,
+              name: product.name,
+              price: product.price,
+              category: product.category,
+              badge: product.badge,
+              garment: product.garment,
+              colors: product.colors,
+              activeColor: product.activeColor,
+              sizes: product.sizes,
+              color: product.color,
+              colorway: product.colorway,
+              added: product.added,
+              collectionId: collectionsByCategory.get(product.category),
+            },
+          },
       upsert: true,
     },
   }))
 
   await Product.bulkWrite(operations)
-  await Product.deleteMany({
-    productId: { $nin: storeCatalogue.map((product) => product.id) },
-  })
+  if (seedReset) {
+    await Product.deleteMany({
+      productId: { $nin: storeCatalogue.map((product) => product.id) },
+    })
+  }
+
   const inventoryOperations = storeCatalogue.flatMap((product) =>
     product.sizes.map((size) => ({
       updateOne: {
@@ -48,10 +99,25 @@ try {
     })),
   )
   await Inventory.bulkWrite(inventoryOperations)
-  await Inventory.deleteMany({
-    productId: { $nin: storeCatalogue.map((product) => product.id) },
-  })
-  console.log(`Seeded ${storeCatalogue.length} products.`)
+  if (seedReset) {
+    await Inventory.deleteMany({
+      productId: { $nin: storeCatalogue.map((product) => product.id) },
+    })
+  }
+
+  for (const [category, collectionId] of collectionsByCategory) {
+    await Product.updateMany(
+      { category },
+      { $set: { collectionId } },
+    )
+  }
+
+  const unassigned = await Product.countDocuments({ collectionId: null })
+  if (unassigned > 0) {
+    throw new Error(`${unassigned} products could not be assigned to a collection.`)
+  }
+
+  console.log(`Seeded ${storeCatalogue.length} products across ${collectionsByCategory.size} collections.`)
 } catch (error) {
   console.error(`Could not seed MongoDB products: ${error.message}`)
   process.exitCode = 1

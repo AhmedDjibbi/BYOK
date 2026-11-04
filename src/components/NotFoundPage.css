@@ -1,0 +1,24 @@
+.not-found {
+  background: var(--bg);
+}
+
+.not-found__body {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+  padding-block: clamp(30px, 5vw, 64px) clamp(48px, 7vw, 96px);
+}
+
+.not-found__body p {
+  margin: 0;
+  max-width: 56ch;
+  color: #bdbdbd;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}

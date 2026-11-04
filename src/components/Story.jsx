@@ -11,7 +11,7 @@ export default function Story() {
 
       <div className="story__body">
         <span className="story__watermark" aria-hidden="true">
-          BYOK
+          BYOC
         </span>
 
         <div className="story__content">
@@ -21,10 +21,10 @@ export default function Story() {
             <span className="story__script">Dreamers</span>
           </h2>
           <p className="story__text">
-            BYOK is more than a brand. It&rsquo;s a movement for the bold, the
+            BYOC is more than a brand. It&rsquo;s a movement for the bold, the
             creative, and the unstoppable.
           </p>
-          <a className="btn btn--outline" href="#/about">
+          <a className="btn btn--outline" href="/about">
             Discover our story
             <ArrowRight />
           </a>

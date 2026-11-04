@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight, Envelope, Instagram, TikTok, XLogo, YouTube } from './Icons'
+import { apiRequest } from '../lib/api'
 import './Newsletter.css'
 
 export default function Newsletter() {
@@ -13,16 +14,13 @@ export default function Newsletter() {
     setSubmitting(true)
     setError('')
     try {
-      const response = await fetch('/api/newsletter', {
+      await apiRequest('/newsletter', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           email,
           website: new FormData(event.currentTarget).get('website'),
-        }),
+        },
       })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Unable to subscribe right now.')
       setSent(true)
       setEmail('')
     } catch (submissionError) {
@@ -79,7 +77,7 @@ export default function Newsletter() {
         )}
         {error && <p className="newsletter__error" role="alert">{error}</p>}
 
-        <ul className="socials" aria-label="BYOK on social media">
+        <ul className="socials" aria-label="BYOC on social media">
           <li>
             <a href="#footer" aria-label="Instagram">
               <Instagram size={15} />

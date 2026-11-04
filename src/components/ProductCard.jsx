@@ -15,7 +15,7 @@ export default function ProductCard({
 
   return (
     <article className="store-card">
-      <a className="store-card__media" href={`#/product/${product.id}`} aria-label={product.name}>
+      <a className="store-card__media" href={`/product/${product.id}`} aria-label={product.name}>
         <Garment {...product.garment} />
         {product.badge && <span className="store-card__badge">{product.badge}</span>}
       </a>
@@ -34,7 +34,7 @@ export default function ProductCard({
       </button>
       <div className="store-card__info-row">
         <h3 className="store-card__name">
-          <a href={`#/product/${product.id}`}>{product.name}</a>
+          <a href={`/product/${product.id}`}>{product.name}</a>
         </h3>
         <QuickAddButton
           productName={product.name}
@@ -43,7 +43,16 @@ export default function ProductCard({
         />
       </div>
       <p className="store-card__price">{product.price} TND</p>
+      {product.ratingCount > 0 && (
+        <p className="store-card__rating">
+          {product.ratingAverage} ★ · {product.ratingCount} review
+          {product.ratingCount === 1 ? '' : 's'}
+        </p>
+      )}
       {!available && <p className="store-card__stock">Out of stock</p>}
+      {product.collection?.name && (
+        <span className="store-card__collection">{product.collection.name}</span>
+      )}
       <ul className="store-card__swatches" aria-label={`Colour: ${product.colorway}`}>
         <li
           className="swatch is-active"

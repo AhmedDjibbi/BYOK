@@ -1,21 +1,28 @@
 import { timingSafeEqual } from 'node:crypto'
+import { config } from '../config.js'
+
+const adminTokens = () =>
+  [...config.adminApiTokens, config.adminApiToken].filter(Boolean)
 
 export default function requireAdmin(request, response, next) {
-  const expected = process.env.ADMIN_API_TOKEN
+  const tokens = adminTokens()
   const authorization = request.get('authorization') ?? ''
   const supplied = authorization.startsWith('Bearer ')
     ? authorization.slice('Bearer '.length)
     : ''
 
-  if (!expected) {
+  if (!tokens.length) {
     return response.status(503).json({ error: 'Staff API is not configured.' })
   }
 
-  const expectedBuffer = Buffer.from(expected)
   const suppliedBuffer = Buffer.from(supplied)
-  const authorized =
-    expectedBuffer.length === suppliedBuffer.length &&
-    timingSafeEqual(expectedBuffer, suppliedBuffer)
+  const authorized = tokens.some((token) => {
+    const expectedBuffer = Buffer.from(token)
+    return (
+      expectedBuffer.length === suppliedBuffer.length &&
+      timingSafeEqual(expectedBuffer, suppliedBuffer)
+    )
+  })
 
   if (!authorized) {
     return response.status(401).json({ error: 'Staff authorization required.' })

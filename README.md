@@ -1,6 +1,6 @@
-# BYOK
+# BYOC
 
-BYOK is a React storefront with a Vite development server and an Express API backed by MongoDB.
+BYOC is a React storefront with a Vite development server and an Express API backed by MongoDB.
 
 ## Requirements
 
@@ -43,7 +43,11 @@ BYOK is a React storefront with a Vite development server and an Express API bac
 - `POST /api/orders` — reserve available stock and save a pending cash-on-delivery order
 - `POST /api/newsletter` — save a newsletter subscription
 - `POST /api/contact` — validate and save a customer message
+- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` — password-based customer accounts with httpOnly sessions
+- `/api/account/*` — authenticated profile, addresses, wishlist, and order history
 - `/api/admin/*` — protected order and inventory management; send `Authorization: Bearer <ADMIN_API_TOKEN>`
+
+During development the Vite server proxies `/api` to the API port from `.env` (`PORT`, default `3000`). If the API runs elsewhere, set `VITE_API_PROXY_TARGET`. The storefront sends every request through one client (`src/lib/api.js`) so JSON headers, errors, and staff authorization behave the same on every page.
 
 Open `#/admin` on the storefront to review orders, confirm/cancel/fulfill them, and set available stock per product and size. Stock counts are sellable units after existing reservations. The token is held only in the current page session. Pending orders reserve stock immediately; cancelling a pending or confirmed order restores it. Fulfilled orders cannot be cancelled through the staff API. Configure HTTPS before using the staff console outside local development.
 
@@ -68,3 +72,7 @@ npm start
 ```
 
 The server serves `dist` when it exists and exposes the API on `PORT` (default `3000`).
+
+
+## Pending orders
+Pending orders reserve stock and expire after PENDING_ORDER_TTL_HOURS (72 by default). Unconfirmed orders are cancelled automatically, stock is released, and customers see the deadline at checkout, in tracking, and in notification text.

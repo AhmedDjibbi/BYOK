@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BYOK — Store page
+   BYOC — Store page
    ========================================================================== */
 
 .store-page {
@@ -543,6 +543,31 @@
   color: #888;
   font-size: 9px;
   text-transform: uppercase;
+}
+
+.store-card__rating {
+  margin: 4px 0 0;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: #c9ff2a;
+  text-transform: uppercase;
+}
+
+.store-card__collection {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 7px;
+  background: rgba(0, 0, 0, 0.72);
+  color: var(--lime);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 2px;
+  pointer-events: auto;
+  text-decoration: none;
 }
 
 .store-card__swatches {

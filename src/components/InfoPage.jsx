@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import BrandedPageHero from './BrandedPageHero'
 import { ArrowRight } from './Icons'
+import { apiRequest } from '../lib/api'
 import './InfoPage.css'
 
 const pageContent = {
   faq: {
     title: 'Frequently',
     accent: 'Asked',
-    subtitle: 'A few useful answers before your next BYOK order.',
+    subtitle: 'A few useful answers before your next BYOC order.',
   },
   shipping: {
     title: 'Shipping',
@@ -22,7 +23,7 @@ const pageContent = {
   contact: {
     title: 'Get in',
     accent: 'Touch',
-    subtitle: 'Questions about a piece or an order? Send the BYOK team a message.',
+    subtitle: 'Questions about a piece or an order? Send the BYOC team a message.',
   },
 }
 
@@ -40,8 +41,12 @@ const questions = [
     answer: 'Available sizes are shown on each product page. If you are unsure, send us a message before ordering and include the product name.',
   },
   {
+    question: 'How long is a pending order held?',
+    answer: 'Pending orders are reserved for 72 hours while we confirm them. If an order is not confirmed within that time, it is cancelled automatically and the items go back on sale.',
+  },
+  {
     question: 'How can I ask about a return or exchange?',
-    answer: 'Contact the BYOK team with your order reference and the item you want to discuss. We will confirm the available options with you.',
+    answer: 'Contact the BYOC team with your order reference and the item you want to discuss. We will confirm the available options with you.',
   },
 ]
 
@@ -49,7 +54,7 @@ const information = {
   shipping: [
     {
       title: 'Where we deliver',
-      text: 'BYOK offers delivery across Tunisia. Add your address and city at checkout so the team can confirm service for your location.',
+      text: 'BYOC offers delivery across Tunisia. Add your address and city at checkout so the team can confirm service for your location.',
     },
     {
       title: 'Delivery timing',
@@ -59,11 +64,15 @@ const information = {
       title: 'Order updates',
       text: 'Orders are submitted as pending cash-on-delivery requests. The team will confirm the order and delivery details with you.',
     },
+    {
+      title: 'Order reservation',
+      text: 'Pending orders are reserved for 72 hours while we confirm them. If an order is not confirmed within that time, it is cancelled automatically and the items are released back to the store.',
+    },
   ],
   returns: [
     {
       title: 'Start a return or exchange request',
-      text: 'Contact BYOK with your order reference, the item name and whether you are requesting a return or a different size. Please wait for confirmation before sending an item back.',
+      text: 'Contact BYOC with your order reference, the item name and whether you are requesting a return or a different size. Please wait for confirmation before sending an item back.',
     },
     {
       title: 'Eligibility and timing',
@@ -93,13 +102,10 @@ export default function InfoPage({ type }) {
       ['name', 'email', 'subject', 'message', 'website'].map((field) => [field, formData.get(field)]),
     )
     try {
-      const response = await fetch('/api/contact', {
+      const result = await apiRequest('/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(message),
+        body: message,
       })
-      const result = await response.json()
-      if (!response.ok) throw new Error(result.error || 'Unable to send your message.')
       setSubmitted(true)
       setNotification(result.notification)
     } catch (submitError) {
@@ -112,7 +118,7 @@ export default function InfoPage({ type }) {
   return (
     <div className="info-page">
       <BrandedPageHero
-        eyebrow={`BYOK / ${type}`}
+        eyebrow={`BYOC / ${type}`}
         title={content.title}
         accent={content.accent}
         subtitle={content.subtitle}
@@ -130,21 +136,22 @@ export default function InfoPage({ type }) {
                 <p>{item.answer}</p>
               </details>
             ))}
-            <a className="btn btn--outline" href="#/contact">Still have a question? Contact us <ArrowRight /></a>
+            <a className="btn btn--outline" href="/contact">Still have a question? Contact us <ArrowRight /></a>
+            <a className="btn btn--outline" href="/order">Track an order <ArrowRight /></a>
           </div>
         ) : type === 'contact' ? (
           <div className="contact-layout">
             <div className="contact-layout__copy">
               <p className="section-label">Talk to the team</p>
               <h2>We’re listening<span>Let’s talk.</span></h2>
-              <p>Send us your question and the BYOK team will get back to you.</p>
+              <p>Send us your question and the BYOC team will get back to you.</p>
               <p className="contact-layout__response">
                 Use the form to reach the team. We’ll reply to the email address you provide.
               </p>
             </div>
             {submitted ? (
               <div className="contact-success" role="status">
-                <span>BYOK</span>
+                <span>BYOC</span>
                 <h2>Message received.</h2>
                 <p>Your message is saved. The team will follow up using the email you provided.</p>
                 {notification && (
@@ -184,7 +191,10 @@ export default function InfoPage({ type }) {
                 </div>
               </article>
             ))}
-            <a className="btn btn--outline" href="#/contact">Ask the BYOK team <ArrowRight /></a>
+            <a className="btn btn--outline" href="/contact">Ask the BYOC team <ArrowRight /></a>
+            {type === 'shipping' && (
+              <a className="btn btn--outline" href="/order">Track an order <ArrowRight /></a>
+            )}
           </div>
         )}
       </div>
