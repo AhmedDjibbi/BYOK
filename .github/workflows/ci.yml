@@ -27,7 +27,7 @@ jobs:
       REDIS_URL: redis://127.0.0.1:6379
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
