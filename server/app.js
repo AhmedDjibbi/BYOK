@@ -54,6 +54,9 @@ export function createApp({ distDirectory = null } = {}) {
   )
   if (config.trustProxy) {
     app.set('trust proxy', config.trustProxy)
+  } else if (process.env.VERCEL) {
+    // Vercel terminates TLS at its edge, so requests arrive through one proxy hop.
+    app.set('trust proxy', 1)
   }
   app.use((request, response, next) => {
     const suppliedId = request.get('x-request-id')

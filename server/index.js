@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createApp } from './app.js'
 import { assertRuntimeConfig, config } from './config.js'
+import { connectToDatabase } from './db.js'
 import { logNotificationConfiguration } from './services/notifications.js'
 import { ensureCollections } from './services/collections.js'
 import { startOrderExpirationJob } from './jobs/expireOrders.js'
@@ -18,7 +19,7 @@ const projectDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const app = createApp({ distDirectory: resolve(projectDirectory, 'dist') })
 
 try {
-  await mongoose.connect(config.mongoUri, { serverSelectionTimeoutMS: 5000 })
+  await connectToDatabase()
   logNotificationConfiguration()
   await ensureCollections()
   const stopExpiration = startOrderExpirationJob()

@@ -73,6 +73,29 @@ npm start
 
 The server serves `dist` when it exists and exposes the API on `PORT` (default `3000`).
 
+## Deploying to Vercel
+
+This repository includes a Vercel setup: `vercel.json` builds the storefront into `dist`, and
+`api/[...path].js` runs the Express API as a serverless function. The site and API share one
+origin, so `/api` requests and auth cookies work without CORS changes.
+
+1. Import the repository in Vercel (framework preset: Vite).
+2. Add environment variables under Project → Settings → Environment Variables:
+   - `MONGODB_URI` — MongoDB Atlas connection string (include the database name).
+   - `ADMIN_API_TOKEN` — random secret of at least 32 characters for the staff API.
+   - `REDIS_URL` — optional. Without it, rate limits apply per serverless instance.
+   - `SHIPPING_*`, `PENDING_ORDER_TTL_HOURS`, `LOW_STOCK_THRESHOLD`, `SMTP_*`, `TWILIO_*` as needed.
+3. Deploy, then check `https://<project>.vercel.app/api/health` returns `{"status":"ok",...}`.
+
+Notes:
+
+- `.env` is never uploaded. Vercel only reads the project environment variables.
+- Run `npm run seed:demo` locally against the same Atlas cluster to populate test data.
+- `TRUST_PROXY` is optional on Vercel: the API assumes one proxy hop automatically.
+  `ALLOWED_ORIGINS` is only needed if a different domain calls the API.
+- The stock-expiry job runs on an interval only in `npm start`. On serverless it runs when a
+  request warms an instance, so add a scheduled job if reliable auto-cancellation matters.
+
 
 ## Pending orders
 Pending orders reserve stock and expire after PENDING_ORDER_TTL_HOURS (72 by default). Unconfirmed orders are cancelled automatically, stock is released, and customers see the deadline at checkout, in tracking, and in notification text.
