@@ -14,6 +14,7 @@ import {
   Diamond,
   Globe,
 } from './Icons'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 import './AboutPage.css'
 
 const valueIcons = {
@@ -24,14 +25,19 @@ const valueIcons = {
 }
 
 export default function AboutPage() {
+  const media = useSiteMedia()
+  const hero = mediaSource(media, 'about.hero', aboutHero)
+  const story = mediaSource(media, 'about.story', aboutStory)
+  const join = mediaSource(media, 'about.join', aboutJoin)
+
   return (
     <div className="about-page">
       <header className="about-hero">
         <div
           className="about-hero__photo"
-          style={{ backgroundImage: `url("${aboutHero.image}")` }}
+          style={{ backgroundImage: `url("${hero.image}")` }}
           role="img"
-          aria-label={aboutHero.alt}
+          aria-label={hero.alt}
         />
         <div className="about-hero__scrim" aria-hidden="true" />
 
@@ -49,7 +55,7 @@ export default function AboutPage() {
       <div className="container">
         <section className="about-story" aria-labelledby="about-story-title">
           <div className="about-story__media">
-            <img src={aboutStory.image} alt={aboutStory.alt} loading="lazy" />
+            <img src={story.image} alt={story.alt} loading="lazy" />
           </div>
 
           <div className="about-story__body">
@@ -112,8 +118,8 @@ export default function AboutPage() {
       <section className="about-join" aria-labelledby="about-join-title">
         <img
           className="about-join__photo"
-          src={aboutJoin.image}
-          alt={aboutJoin.alt}
+          src={join.image}
+          alt={join.alt}
           loading="lazy"
         />
         <div className="about-join__scrim" aria-hidden="true" />

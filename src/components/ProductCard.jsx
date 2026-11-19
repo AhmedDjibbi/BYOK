@@ -1,6 +1,7 @@
 import { Heart } from './Icons'
 import Garment from './Garment'
 import QuickAddButton from './QuickAddButton'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 
 export default function ProductCard({
   product,
@@ -12,11 +13,20 @@ export default function ProductCard({
     product.sizes.find((size) => (product.stockBySize?.[size] ?? 0) > 0) ??
     (product.sizes.includes('M') ? 'M' : product.sizes[0])
   const available = (product.stockBySize?.[defaultSize] ?? 0) > 0
+  const media = useSiteMedia()
+  const photo = mediaSource(media, `product.${product.id}`, {
+    image: null,
+    alt: `${product.name} — ${product.colorway}`,
+  })
 
   return (
     <article className="store-card">
       <a className="store-card__media" href={`/product/${product.id}`} aria-label={product.name}>
-        <Garment {...product.garment} />
+        {photo.image ? (
+          <img src={photo.image} alt={photo.alt || product.name} loading="lazy" />
+        ) : (
+          <Garment {...product.garment} />
+        )}
         {product.badge && <span className="store-card__badge">{product.badge}</span>}
       </a>
       <button

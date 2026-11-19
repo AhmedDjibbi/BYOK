@@ -9,6 +9,8 @@ import adminRouter from './routes/admin.js'
 import apiRouter from './routes/api.js'
 import authRouter from './routes/auth.js'
 import accountRouter from './routes/account.js'
+import { adminMediaRouter, publicMediaRouter } from './routes/media.js'
+import requireAdmin from './middleware/requireAdmin.js'
 import { config } from './config.js'
 import { createRateLimitMiddleware } from './rateLimitStore.js'
 
@@ -21,7 +23,7 @@ const cspDirectives = {
   scriptSrc: ["'self'"],
   styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
   fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-  imgSrc: ["'self'", 'data:', 'https://images.unsplash.com'],
+  imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
   connectSrc: ["'self'"],
   objectSrc: ["'none'"],
   frameAncestors: ["'none'"],
@@ -83,6 +85,22 @@ export function createApp({ distDirectory = null } = {}) {
     next()
   })
   app.use(cookieParser())
+
+  // Media uploads arrive as base64 data URLs, so they need their own, larger
+  // JSON body limit. This must be mounted before the global parser.
+  app.use(
+    '/api/admin/media',
+    express.json({ limit: '4mb' }),
+    createRateLimitMiddleware({
+      prefix: 'rl:admin:media',
+      windowMs: 15 * 60 * 1000,
+      limit: 60,
+      message: { error: 'Too many media updates. Please try again later.' },
+    }),
+    requireAdmin,
+    adminMediaRouter,
+  )
+
   app.use(express.json({ limit: '20kb' }))
   app.use(
     '/api/admin',
@@ -94,6 +112,7 @@ export function createApp({ distDirectory = null } = {}) {
     }),
   )
   app.use('/api/admin', adminRouter)
+  app.use('/api', publicMediaRouter)
   app.use('/api/auth', authRouter)
   app.use('/api/account', accountRouter)
   app.use('/api', apiRouter)

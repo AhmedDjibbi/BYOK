@@ -1,19 +1,24 @@
 import { useState } from 'react'
 import { heroSlides } from '../data/content'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 import { ArrowRight, ChevronDown, ChevronUp, Play } from './Icons'
 import './Hero.css'
 
 export default function Hero() {
   const [active, setActive] = useState(0)
-  const total = heroSlides.length
+  const media = useSiteMedia()
+  const slides = heroSlides.map((slide, index) =>
+    mediaSource(media, `home.hero.${index + 1}`, slide),
+  )
+  const total = slides.length
 
   const go = (step) => setActive((index) => (index + step + total) % total)
 
   return (
     <section className="hero" id="top" aria-label="SS25 new drop">
-      {heroSlides.map((slide, index) => (
+      {slides.map((slide, index) => (
         <div
-          key={slide.image}
+          key={index}
           className={`hero__bg${index === active ? ' is-active' : ''}`}
           style={{ backgroundImage: `url("${slide.image}")` }}
           role={index === active ? 'img' : undefined}

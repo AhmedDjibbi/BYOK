@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { apiRequest } from '../lib/api'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
+import { STORE_BANNER } from '../data/mediaSlots'
 import { ChevronRight } from './Icons'
 import './AccountPage.css'
 
@@ -37,6 +39,11 @@ export default function AccountPage({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const media = useSiteMedia()
+  const accountBanner = mediaSource(media, 'page.account', {
+    image: STORE_BANNER,
+    alt: 'BYOC members banner',
+  })
 
   usePageMeta({ title: 'Account | BYOC', description: 'Your BYOC account and order history.' })
 
@@ -123,7 +130,11 @@ export default function AccountPage({
   return (
     <main className="account-page">
       <header className="account-hero">
-        <div className="account-hero__photo" aria-hidden="true" />
+        <div
+          className="account-hero__photo"
+          style={{ backgroundImage: `url("${accountBanner.image}")` }}
+          aria-hidden="true"
+        />
         <div className="account-hero__scrim" aria-hidden="true" />
 
         <div className="container account-hero__inner">

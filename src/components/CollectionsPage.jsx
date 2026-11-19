@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, ChevronRight } from './Icons'
 import { fetchCollections } from '../lib/api'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
+import { collectionsHero, movementBanner, collectionTiles } from '../data/content'
 import CatalogueState from './CatalogueState'
 import './CollectionsPage.css'
 
@@ -8,6 +10,15 @@ export default function CollectionsPage() {
   const [collections, setCollections] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const media = useSiteMedia()
+  const hero = mediaSource(media, 'collections.hero', collectionsHero)
+  const movement = mediaSource(media, 'collections.movement', movementBanner)
+
+  const collectionImageFor = (collection) => {
+    if (collection.image) return { image: collection.image, alt: collection.name }
+    const fallback = collectionTiles.find((tile) => tile.id === collection.slug)
+    return mediaSource(media, `collection.${collection.slug}`, fallback ?? movementBanner)
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -27,8 +38,9 @@ export default function CollectionsPage() {
       <header className="collection-hero">
         <div
           className="collection-hero__photo"
+          style={{ backgroundImage: `url("${hero.image}")` }}
           role="img"
-          aria-label="BYOC collections"
+          aria-label={hero.alt}
         />
         <div className="collection-hero__scrim" aria-hidden="true" />
 
@@ -68,6 +80,7 @@ export default function CollectionsPage() {
                 key={collection.id}
               >
                 <span className="collection-tile__scrim" aria-hidden="true" />
+                <img src={collectionImageFor(collection).image} alt={collectionImageFor(collection).alt} loading="lazy" />
                 <span className="collection-tile__body">
                   <span className="collection-tile__title">{collection.name}</span>
                   <span className="collection-tile__meta">
@@ -81,6 +94,9 @@ export default function CollectionsPage() {
         )}
 
         <section className="movement" aria-label="Wear the movement">
+          <div className="movement__media">
+            <img src={movement.image} alt={movement.alt} loading="lazy" />
+          </div>
           <div className="movement__body">
             <span className="movement__watermark" aria-hidden="true">
               BYOC

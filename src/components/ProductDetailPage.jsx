@@ -4,6 +4,7 @@ import Garment from './Garment'
 import BrandedPageHero from './BrandedPageHero'
 import CatalogueState from './CatalogueState'
 import { usePageMeta } from '../hooks/usePageMeta.js'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 import { apiRequest, fetchProducts } from '../lib/api'
 import './ProductDetailPage.css'
 import './Store.css'
@@ -23,6 +24,7 @@ export default function ProductDetailPage({
   const [added, setAdded] = useState(false)
   const [reviews, setReviews] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
+  const media = useSiteMedia()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -47,6 +49,12 @@ export default function ProductDetailPage({
   }
 
   const product = products.find((item) => item.id === selectedId)
+  const productPhoto = product
+    ? mediaSource(media, `product.${product.id}`, {
+        image: null,
+        alt: `${product.name} — ${product.colorway}`,
+      })
+    : null
   const variants = useMemo(
     () => (product ? products.filter((item) => item.name === product.name) : []),
     [product, products],
@@ -177,7 +185,16 @@ export default function ProductDetailPage({
       />
       <div className="container product-detail__layout">
         <div className="product-detail__visual">
-          <Garment {...product.garment} />
+          {productPhoto?.image ? (
+            <img
+              className="product-detail__photo"
+              src={productPhoto.image}
+              alt={productPhoto.alt || product.name}
+              loading="lazy"
+            />
+          ) : (
+            <Garment {...product.garment} />
+          )}
           <span className="product-detail__color-tag">{product.colorway}</span>
         </div>
         <section className="product-detail__info" aria-labelledby="product-title">

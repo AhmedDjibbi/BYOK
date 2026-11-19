@@ -1,12 +1,16 @@
 import { storyImage } from '../data/content'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 import { ArrowRight } from './Icons'
 import './Story.css'
 
 export default function Story() {
+  const media = useSiteMedia()
+  const story = mediaSource(media, 'home.story', storyImage)
+
   return (
     <section className="story" id="story">
       <div className="story__media">
-        <img src={storyImage.image} alt={storyImage.alt} loading="lazy" />
+        <img src={story.image} alt={story.alt} loading="lazy" />
       </div>
 
       <div className="story__body">

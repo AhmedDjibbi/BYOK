@@ -10,6 +10,8 @@ import {
   sortOptions,
 } from '../data/store'
 import { fetchCollections, fetchProducts } from '../lib/api'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
+import { STORE_BANNER } from '../data/mediaSlots'
 import './Store.css'
 
 const validSortIds = new Set(sortOptions.map((option) => option.id))
@@ -33,6 +35,11 @@ export default function Store({
   initialSort = 'best',
   featuredOnly = false,
 }) {
+  const siteMedia = useSiteMedia()
+  const storeBanner = mediaSource(siteMedia, 'store.hero', {
+    image: STORE_BANNER,
+    alt: 'BYOC storefront photographed in black and white',
+  })
   const [products, setProducts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [catalogueError, setCatalogueError] = useState(false)
@@ -159,7 +166,7 @@ export default function Store({
       <header className="store-hero">
         <div
           className="store-hero__photo"
-          style={{ backgroundImage: "url('/images/store-hero.jpg')" }}
+          style={{ backgroundImage: `url("${storeBanner.image}")` }}
           aria-hidden="true"
         />
         <div className="store-hero__scrim" aria-hidden="true" />

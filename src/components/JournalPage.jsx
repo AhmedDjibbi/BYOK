@@ -1,9 +1,11 @@
 import { journalEntries } from '../data/content'
+import { mediaSource, useSiteMedia } from '../hooks/useSiteMedia'
 import { ArrowRight, ChevronRight } from './Icons'
 import BrandedPageHero from './BrandedPageHero'
 import './JournalPage.css'
 
 export default function JournalPage({ entryId }) {
+  const media = useSiteMedia()
   const entry = journalEntries.find((item) => item.id === entryId)
 
   if (entryId) {
@@ -15,6 +17,8 @@ export default function JournalPage({ entryId }) {
         </div>
       )
     }
+
+    const image = mediaSource(media, `journal.${entry.id}`, entry)
 
     return (
       <article className="journal-article">
@@ -28,7 +32,7 @@ export default function JournalPage({ entryId }) {
             <ChevronRight className="journal-article__back-icon" size={13} />
             Back to journal
           </a>
-          <img src={entry.image} alt={entry.alt} />
+          <img src={image.image} alt={image.alt} loading="lazy" />
           <p>{entry.body}</p>
           <a className="btn btn--outline" href="/collections/essentials">
             Find your fit <ArrowRight />
@@ -47,20 +51,23 @@ export default function JournalPage({ entryId }) {
         subtitle="Style notes, stories and thoughts from the movement."
       />
       <div className="container journal-grid">
-        {journalEntries.map((item, index) => (
-          <article className="journal-card" key={item.id}>
-            <a className="journal-card__image" href={`/journal/${item.id}`}>
-              <img src={item.image} alt={item.alt} loading="lazy" />
-              <span>0{index + 1}</span>
-            </a>
-            <p className="journal-card__category">{item.category}</p>
-            <h2><a href={`/journal/${item.id}`}>{item.title}</a></h2>
-            <p className="journal-card__excerpt">{item.excerpt}</p>
-            <a className="link-arrow" href={`/journal/${item.id}`}>
-              Read story <ArrowRight />
-            </a>
-          </article>
-        ))}
+        {journalEntries.map((item, index) => {
+          const image = mediaSource(media, `journal.${item.id}`, item)
+          return (
+            <article className="journal-card" key={item.id}>
+              <a className="journal-card__image" href={`/journal/${item.id}`}>
+                <img src={image.image} alt={image.alt} loading="lazy" />
+                <span>0{index + 1}</span>
+              </a>
+              <p className="journal-card__category">{item.category}</p>
+              <h2><a href={`/journal/${item.id}`}>{item.title}</a></h2>
+              <p className="journal-card__excerpt">{item.excerpt}</p>
+              <a className="link-arrow" href={`/journal/${item.id}`}>
+                Read story <ArrowRight />
+              </a>
+            </article>
+          )
+        })}
       </div>
     </div>
   )
