@@ -9,6 +9,7 @@
     "dev:web": "vite",
     "start": "node server/index.js",
     "seed": "node server/seed.js",
+    "seed:demo": "node server/seed.js && node server/seed-demo.js",
     "db:backup": "node server/backup.js",
     "build": "vite build",
     "lint": "oxlint",
