@@ -1,10 +1,10 @@
 /* ==========================================================================
    Vercel serverless entrypoint.
 
-   `api/[...path].js` receives every request under /api/*. Vercel keeps the
-   original path, and server/app.js already mounts its routers at /api, so the
-   request is handed to Express untouched. The connection is cached per warm
-   instance by server/db.js.
+   Vercel deploys each file in /api as a function, but it does not support
+   catch-all filenames such as [...path].js for plain functions. So this single
+   function serves the whole API, and vercel.json rewrites /api/* to it while
+   passing the original subpath as `__path`.
    ========================================================================== */
 
 import { createApp } from '../server/app.js'
@@ -14,11 +14,29 @@ import { connectToDatabase } from '../server/db.js'
 const app = createApp({ distDirectory: null })
 let warnedAboutRedis = false
 
+function restoreApiPath(request) {
+  if (!request.url) {
+    request.url = '/api'
+    return
+  }
+
+  const target = new URL(request.url, 'http://localhost')
+  const forwarded = target.searchParams.get('__path')
+
+  if (forwarded === null) {
+    if (!request.url.startsWith('/api')) request.url = `/api${request.url}`
+    return
+  }
+
+  target.searchParams.delete('__path')
+  const suffix = forwarded.replace(/^\/+/, '')
+  request.url = `/api/${suffix}${target.search}`
+}
+
 export default async function handler(request, response) {
   try {
-    if (!request.url?.startsWith('/api')) {
-      request.url = `/api${request.url ?? ''}`
-    }
+    restoreApiPath(request)
+
     if (!config.redisUrl && !warnedAboutRedis) {
       warnedAboutRedis = true
       console.warn('REDIS_URL is not set; rate limits are per serverless instance.')

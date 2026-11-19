@@ -76,8 +76,11 @@ The server serves `dist` when it exists and exposes the API on `PORT` (default `
 ## Deploying to Vercel
 
 This repository includes a Vercel setup: `vercel.json` builds the storefront into `dist`, and
-`api/[...path].js` runs the Express API as a serverless function. The site and API share one
-origin, so `/api` requests and auth cookies work without CORS changes.
+`api/index.js` runs the Express API as a serverless function. Because Vercel does not support
+catch-all filenames for plain `/api` functions, `vercel.json` rewrites every `/api/*` request to
+that one function and forwards the subpath as `__path`; the entrypoint restores it before handing
+the request to Express. The site and API share one origin, so `/api` requests and auth cookies
+work without CORS changes.
 
 1. Import the repository in Vercel (framework preset: Vite).
 2. Add environment variables under Project → Settings → Environment Variables:
