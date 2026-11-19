@@ -17,7 +17,11 @@ export default function AdminPage() {
   const [inventory, setInventory] = useState([])
   const [statusFilter, setStatusFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [collections, setCollections] = useState([])
+  const [newCollectionName, setNewCollectionName] = useState('')
   const [collectionSaving, setCollectionSaving] = useState(false)
+  const [subscribers, setSubscribers] = useState([])
+  const [totalSubscribers, setTotalSubscribers] = useState(0)
   const [shippingSettings, setShippingSettings] = useState({
     mode: 'fixed',
     value: 0,
@@ -508,23 +512,6 @@ export default function AdminPage() {
                   Delete
                 </button>
               </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="admin-section">
-          <div className="admin-section__heading">
-            <div>
-              <p className="admin-eyebrow">Newsletter / {totalSubscribers} subscribers</p>
-              <h2>Subscribers</h2>
-            </div>
-            <button type="button" onClick={exportSubscribers}>Export CSV</button>
-          </div>
-          <div className="admin-subscriber-list">
-            {subscribers.map((subscriber) => (
-              <p key={subscriber._id ?? subscriber.email}>
-                {subscriber.email} · {subscriber.status}
-              </p>
             ))}
           </div>
         </section>
