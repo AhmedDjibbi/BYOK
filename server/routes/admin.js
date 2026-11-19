@@ -12,6 +12,11 @@ import requireAdmin from '../middleware/requireAdmin.js'
 import { sendNotifications } from '../services/notifications.js'
 import Review from '../models/Review.js'
 import { recordAudit } from '../services/audit.js'
+import {
+  bumpShippingConfigVersion,
+  getShippingConfig,
+  updateShippingConfig,
+} from '../services/storeSettings.js'
 
 const router = Router()
 const statuses = new Set(['pending', 'confirmed', 'cancelled', 'fulfilled'])
@@ -177,7 +182,7 @@ router.put('/inventory/:productId/:size', async (request, response, next) => {
   }
 })
 
-router.get('/settings/shipping', async (_request, response) => {
+router.get('/settings/shipping', async (_request, response, next) => {
   try {
     response.json({ shipping: await getShippingConfig() })
   } catch (error) {
